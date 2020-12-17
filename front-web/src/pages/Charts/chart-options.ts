@@ -47,7 +47,7 @@ export const pieOptions = {
         horizontal: true,
         endingShape: "rounded",
         startingShape: "rounded",
-        barHeight: "60px",
+        barHeight: "30px",
       },
     },
     dataLabels: {
@@ -75,7 +75,7 @@ export const pieOptions = {
             colors: "#00D4FF",
             fontSize: "18px",
             fontFamily: "Play, sans-serif",
-            fontWeight: 700,
+            fontWeight: 400,
           },
         },
       },
