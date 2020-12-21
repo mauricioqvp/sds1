@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesome5 as Icon } from '@expo/vector-icons';
-import { StyleSheet, View, TextInput } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Alert } from 'react-native';
 import Header from '../../components/Header';
 import PlatformCard from './PlatformCard';
 import { GamePlatform, Game } from './types';
 import RNPickerSelect from 'react-native-picker-select';
+import { RectButton } from 'react-native-gesture-handler';
 import axios from 'axios';
 
 const placeholder = {
@@ -24,6 +25,8 @@ const mapSelectValues = (games: Game[]) => {
 
 const CreateRecord = () => {
 
+  const [name, setName] = useState('');
+  const [age, setAge] = useState('');
   const [platform, setPlatform] = useState<GamePlatform>();
   const [selectedGame, setSelectedGame] = useState('');
   const [allGames, setAllGames] = useState<Game[]>([]);
@@ -34,7 +37,21 @@ const CreateRecord = () => {
     const gamesByPlatform = allGames.filter(
       game => game.platform === selectedPlatform
     )
-      setFilteredGames(gamesByPlatform);
+    setFilteredGames(gamesByPlatform);
+  }
+
+  const handleSubmit = () => {
+    const payload = { name, age, gameId: selectedGame };
+
+    axios.post(`${BASE_URL}/records`, payload)
+      .then(() => {
+        Alert.alert('Dados salvos com sucesso');
+        setName('');
+        setAge('');
+        setSelectedGame('');
+        setPlatform(undefined);
+      })
+      .catch(() => Alert.alert('Erro ao salvar informações'))
   }
 
   useEffect(() => {
@@ -44,6 +61,7 @@ const CreateRecord = () => {
         console.log(selectValues);
         setAllGames(selectValues);
       })
+      .catch(() => Alert.alert('Erro ao listar os jogos!'))
   }, []);
 
   return (
@@ -54,6 +72,8 @@ const CreateRecord = () => {
           style={styles.inputText}
           placeholder="Nome"
           placeholderTextColor="#9E9E9E"
+          onChangeText={text => setName(text)}
+          value={name}
         />
         <TextInput
           keyboardType="numeric"
@@ -61,6 +81,8 @@ const CreateRecord = () => {
           placeholder="Idade"
           placeholderTextColor="#9E9E9E"
           maxLength={3}
+          onChangeText={text => setAge(text)}
+          value={age}
         />
         <View style={styles.platformContainer}>
           <PlatformCard
@@ -94,6 +116,13 @@ const CreateRecord = () => {
             return <Icon name="chevron-down" color="#9E9E9E" size={25} />
           }}
         />
+        <View style={styles.footer}>
+          <RectButton style={styles.button} onPress={handleSubmit}>
+            <Text style={styles.buttonText}>
+              SALVAR
+            </Text>
+          </RectButton>
+        </View>
       </View>
     </>
   );
